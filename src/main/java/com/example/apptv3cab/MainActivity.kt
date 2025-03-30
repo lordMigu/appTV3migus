@@ -14,20 +14,20 @@ import kotlinx.coroutines.launch
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.unit.sp
 
 sealed class DrawerScreens(val title: String, val icon: ImageVector) {
-    object Products : DrawerScreens("Productos", Icons.Default.Menu)
-    object Company : DrawerScreens("Empresa", Icons.Default.Menu)
+    //Titulos de los fragmentos
+    object Products : DrawerScreens("Productos (en construcción)", Icons.Default.ShoppingCart) //Icons: icono lateral de tabs con carrito
+    object Company : DrawerScreens("Empresa", Icons.Default.Call) //Icono de telefono tab
 }
 @Preview
 @OptIn(ExperimentalMaterial3Api::class)
@@ -87,8 +87,7 @@ fun MainScreen() {
                 contentAlignment = Alignment.Center
             ) {
                 when (currentScreen) {
-                    //Fragmento de Producto desactivado
-                    //is DrawerScreens.Products -> ProductosScreen()
+                    is DrawerScreens.Products -> ProductosScreen()
                     is DrawerScreens.Company -> EmpresaScreen()
                     else -> {}
                 }
@@ -109,7 +108,10 @@ fun NavigationDrawerHeader() {
             text = "Migus",
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
+            color = Color.Blue
+            //color = Color(0xFF6A1B9A) //morado hexadecimal
+            //Color primario de theme
+            //color = MaterialTheme.colorScheme.primary
         )
         Spacer(Modifier.height(8.dp))
         Divider()
@@ -152,14 +154,16 @@ fun NavigationDrawerBody(
     }
 }
 
-/*@Composable
+@Composable
 fun ProductosScreen() {
     Text(
-        text = "Sin productos",
-        style = MaterialTheme.typography.headlineMedium
+        text = "Productos",
+        style = MaterialTheme.typography.headlineMedium,
+        color = Color.Blue
     )
-}*/
-// Modifica la EmpresaScreen para incluir las pestañas
+}
+
+// Modifica la EmpresaScreen para incluir los fragmentos Contáctenos y Quiénes Somos
 @Composable
 fun EmpresaScreen() {
     var selectedTab by remember { mutableStateOf(0) }
@@ -205,9 +209,11 @@ fun ContactenosContent() {
     var ciudadSeleccionada by remember { mutableStateOf("") }
     var nacionalidadSeleccionada by remember { mutableStateOf("") }
 
-
+    //Lista de principales Ciudades como Spinner, osea una lista desplegable para elegir
     val ciudadesGuayas = listOf(
         "Guayaquil",
+        "Quito",
+        "Cuenca",
         "Durán",
         "Samborondón",
         "Daule",
@@ -224,10 +230,11 @@ fun ContactenosContent() {
             .padding(16.dp)
     ) {
         Text(
-            text = "Formulario de Contacto",
+            text = "Contáctenos",
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(bottom = 24.dp)
+            modifier = Modifier.padding(bottom = 24.dp),
+            fontWeight = FontWeight.Bold
         )
 
         // Campo Nombre
@@ -316,13 +323,11 @@ fun ContactenosContent() {
                 .fillMaxWidth()
                 .padding(vertical = 8.dp)
         ) {
-            Text(text = "Nacionalidad",
+            Text(
+                text = "Nacionalidad",
+                style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(bottom = 8.dp),
-                style = androidx.compose.ui.text.TextStyle(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 30.sp
-                )
+                modifier = Modifier.padding(bottom = 8.dp)
             )
 
             Row(
@@ -343,7 +348,7 @@ fun ContactenosContent() {
                     )
                     Text(
                         text = "Ecuatoriano",
-                        style = MaterialTheme.typography.bodyLarge,
+                        style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(start = 4.dp)
                     )
                 }
@@ -399,23 +404,18 @@ fun QuienesSomosContent() {
     ) {
         Text(
             text = "Nuestra Historia",
-            style = androidx.compose.ui.text.TextStyle(
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            ),
-            modifier = Modifier.padding(bottom = 16.dp)
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(bottom = 16.dp),
+            fontWeight = FontWeight.Bold
         )
 
         Text(
-            text = "En Migus, servimos las hamburguesas más jugosas y pizzas más crocantes desde 2015. " +
-                    "Combinamos ingredientes frescos locales con recetas innovadoras para crear experiencias únicas. " +
-                    "Nuestro compromiso: entregar comida rápida premium en menos de 25 minutos, las 24 horas del día. " +
-                    "¡Más de 50 combinaciones diferentes para satisfacer todos los antojos!",
-            style = androidx.compose.ui.text.TextStyle(
-                fontSize = 18.sp,
-                lineHeight = 24.sp
-            ),
+            text = "En Migus, fusionamos la pasión por las hamburguesas jugosas y las pizzas artesanales desde 2012. " +
+                    "Con ingredientes 100% frescos y recetas únicas, hemos revolucionado la comida rápida en Ecuador. " +
+                    "Nuestro secreto: masa de pizza fermentada por 48h y carnes premium maduradas. " +
+                    "¡Más de 1 millón de clientes satisfechos nos respaldan!",
+            style = MaterialTheme.typography.bodyLarge,
             textAlign = TextAlign.Justify,
             modifier = Modifier.padding(horizontal = 8.dp)
         )
@@ -424,78 +424,36 @@ fun QuienesSomosContent() {
 
         Text(
             text = "Nuestros Pilares",
-            style = androidx.compose.ui.text.TextStyle(
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            ),
-            modifier = Modifier.padding(bottom = 16.dp)
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(bottom = 16.dp),
+            fontWeight = FontWeight.Bold
         )
 
         val valores = listOf(
-            "Carne 100% fresca de res alimentada con pasto",
-            "Masa de pizza fermentada por 48 horas",
-            "Quesos importados y vegetales orgánicos",
-            "Opciones para toda la familia (incluyendo vegetarianas)",
-            "Hornos profesionales a 400°C para pizzas perfectas",
-            "Limpieza certificada y procesos de calidad"
+            "Hamburguesas: 200g de carne Angus con 3 tipos de maduración",
+            "Pizzas: Horneadas en horno de piedra a 400°C",
+            "Delivery express garantizado en menos de 30 min",
+            "Opciones veganas y sin gluten",
+            "Compromiso ecológico: Empaques biodegradables",
+            "Open las 24hrs los 365 días del año"
         )
 
         valores.forEach { valor ->
             ListItem(
-                headlineContent = {
-                    Text(
-                        text = valor,
-                        style = androidx.compose.ui.text.TextStyle(fontSize = 18.sp))
-                },
+                headlineContent = { Text(valor) },
                 leadingContent = {
                     Icon(
-                        imageVector = Icons.Default.CheckCircle,
+                        //Iconos de los valores de Quienes somos
+                        //imageVector = Icons.Default.CheckCircle, // Icono de cheklist
+                        imageVector = Icons.Default.Star, //Icono de estrella
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(32.dp)
+                        // Establece el color del icono al color primario
+                        tint = MaterialTheme.colorScheme.primary
                     )
                 },
-                modifier = Modifier.padding(vertical = 8.dp)
+                modifier = Modifier.padding(vertical = 4.dp)
             )
-        }
-    }
-}
-
-@Composable
-fun ContactItem(icon: ImageVector, title: String, content: String) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant,
-            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                modifier = Modifier.size(32.dp)
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            Column {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Text(
-                    text = content,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
         }
     }
 }
